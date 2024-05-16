@@ -25,7 +25,7 @@ def load_data3(file_path):
     return df
 
 # 读取Excel文件
-excel_file = r"D:\personal\2024\py\eda\2150308_EDA_homework\data\phone_parameters_refined.xlsx"
+excel_file = "data/phone_parameters_refined.xlsx"
 df = load_data2(excel_file)
 
 df['parsed_date'] = pd.to_datetime(df['parsed_date'], errors='coerce')

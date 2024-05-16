@@ -23,19 +23,19 @@ def load_data3(file_path):
     df = pd.read_excel(file_path, sheet_name='Data', skiprows=4)
     return df
 
-file_path = r'D:\personal\2024\py\eda\2150308_EDA_homework\data\vendor-ww-monthly-201003-202405.csv'
+file_path = 'data/vendor-ww-monthly-201003-202405.csv'
 
 data = load_data(file_path)                                                                       # 月度份额
 
-excel_file = r"D:\personal\2024\py\eda\2150308_EDA_homework\data\phone_parameters.xlsx"
+excel_file = "data/phone_parameters.xlsx"
 df_phone_models = load_data2(excel_file)                                                         # 手机参数数据
 
 df_phone_models = df_phone_models.dropna(subset='型号')
 
-excel_file = r"D:\personal\2024\py\eda\2150308_EDA_homework\data\phone_parameters_refined.xlsx"
+excel_file = "data/phone_parameters_refined.xlsx"
 df_phone_models2 = load_data2(excel_file)        
 
-file_path_shipment_ww = r'D:\personal\2024\py\eda\2150308_EDA_homework\data\statistic_id271490_global-smartphone-shipments-by-vendor-2009-2024.xlsx'
+file_path_shipment_ww = 'data/statistic_id271490_global-smartphone-shipments-by-vendor-2009-2024.xlsx'
 data_shipment_ww = load_data3(file_path_shipment_ww)              # 季度出货量数据
 
 st.markdown('''
