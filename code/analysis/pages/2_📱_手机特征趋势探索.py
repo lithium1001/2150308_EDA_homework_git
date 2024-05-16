@@ -77,7 +77,7 @@ color_map = {
 #################################各时代代表机型图片（机型销售数据找不到，看研报吧）############################
 
 st.markdown("## 1. 时代代表机型图片")
-img=Image.open(r"D:\personal\2024\py\eda\2150308_EDA_homework\data\phone_development.jpg")
+img=Image.open("data/phone_development.jpg")
 fig8=px.imshow(img)
 fig8.update_layout(width=1000, height=800)
 st.plotly_chart(fig8)
@@ -525,7 +525,7 @@ plot_stacked_bar_chart(technology_trends_bluetooth_filtered, 'Bluetooth Technolo
 
 st.markdown("## 不同年份发布新机颜色比例")
 # 加载颜色计数数据
-color_count_file_path = r'D:\personal\2024\py\eda\2150308_EDA_homework\data\color_count.csv'
+color_count_file_path = 'data/color_count.csv'
 color_count_df = pd.read_csv(color_count_file_path)
 
 # 筛选出热门颜色列表
