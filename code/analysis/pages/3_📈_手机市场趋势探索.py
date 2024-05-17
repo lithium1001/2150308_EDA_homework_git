@@ -161,7 +161,7 @@ else:
 
 st.divider()
 st.markdown("## 出货量、市场份额与供应商该季度发布的新机型")
-st.markdown("### 横轴为出货量（百万），纵轴为市场份额，气泡大小为该季度发布的新机型数量")
+st.markdown("横轴为出货量（百万），纵轴为市场份额，气泡大小为该季度发布的新机型数量")
 df1 = df1.iloc[3:]
 df1.columns = df1.columns.str.replace('*', '').str.title()
  
@@ -222,3 +222,5 @@ fig3.update_layout(
 )
 
 st.plotly_chart(fig3)
+st.divider()
+st.markdown('作者：同济大学 信息管理与信息系统专业 李佳佳')

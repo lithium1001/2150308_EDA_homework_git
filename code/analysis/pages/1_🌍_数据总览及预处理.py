@@ -232,3 +232,6 @@ for i in range(0, num_columns, num_plots_per_row):
 # fig5, ax = plt.subplots(figsize=(10, 8))
 # sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', ax=ax)
 # st.pyplot(fig5)
+
+st.divider()
+st.markdown('作者：同济大学 信息管理与信息系统专业 李佳佳')

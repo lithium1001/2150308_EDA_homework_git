@@ -586,3 +586,5 @@ st.plotly_chart(fig2)
 st.markdown('更大、更重、更高性能的手机正在成为市场主流。')
 
 
+st.divider()
+st.markdown('作者：同济大学 信息管理与信息系统专业 李佳佳')
