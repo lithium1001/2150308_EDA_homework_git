@@ -24,6 +24,44 @@ def load_data3(file_path):
     df = pd.read_excel(file_path, sheet_name='Data', skiprows=4)
     return df
 
+@st.experimental_fragment
+def draw_mosaic_plot(data):
+    fig = px.treemap(
+        data, 
+        title=selected_date.strftime('%Y-%m') + "的手机供应商市场份额",
+        path=['Vendor'], 
+        values='Share', 
+        color='Vendor',
+        labels={'Share': 'Percentage'},
+        color_discrete_map=brand_colors
+    )
+    
+    fig.update_traces(
+        texttemplate='%{label}<br>%{value:.2f}%', 
+        textinfo='label+text+value',
+        textposition='middle center',
+        textfont_size=35
+        
+    )
+    fig.update_layout(width=1300, height=800,title=dict(font=dict(size=40)))
+    return fig
+
+def convert_quarter(date_str):
+    parts = str(date_str).split(' ')
+    if len(parts) == 2:
+        quarter, year = parts[0], parts[1]
+        return f"{quarter} \\'"+"20"+year[1:]
+    else:
+        return None 
+    
+def convert_quarter2(date_str):
+    parts = str(date_str).split('Q')
+    if len(parts) == 2:
+        quarter, year = parts[1], parts[0]
+        return f"Q{quarter} \\'{year}"
+    else:
+        return None 
+    
 file_path = 'data/vendor-ww-monthly-201003-202405.csv'
 data = load_data(file_path)                                                                       # 月度份额
 
@@ -111,27 +149,7 @@ filtered_data = data[data['Date']==selected_date]
 # melt数据
 melted_data = filtered_data.melt(id_vars=['Date'], var_name='Vendor', value_name='Share')
 
-@st.experimental_fragment
-def draw_mosaic_plot(data):
-    fig = px.treemap(
-        data, 
-        title=selected_date.strftime('%Y-%m') + "的手机供应商市场份额",
-        path=['Vendor'], 
-        values='Share', 
-        color='Vendor',
-        labels={'Share': 'Percentage'},
-        color_discrete_map=brand_colors
-    )
-    
-    fig.update_traces(
-        texttemplate='%{label}<br>%{value:.2f}%', 
-        textinfo='label+text+value',
-        textposition='middle center',
-        textfont_size=35
-        
-    )
-    fig.update_layout(width=1300, height=800,title=dict(font=dict(size=40)))
-    return fig
+
 
 config = dict({'displayModeBar': False})
 if not melted_data.empty:
@@ -145,13 +163,7 @@ st.markdown("## 出货量、市场份额与供应商该季度发布的新机型"
 st.markdown("### 横轴为出货量（百万），纵轴为市场份额，气泡大小为该季度发布的新机型数量")
 df1 = df1.iloc[3:]
 df1.columns = df1.columns.str.replace('*', '').str.title()
-def convert_quarter(date_str):
-    parts = str(date_str).split(' ')
-    if len(parts) == 2:
-        quarter, year = parts[0], parts[1]
-        return f"{quarter} \\'"+"20"+year[1:]
-    else:
-        return None  
+ 
 
 df1['Quarter1'] = df1['Quarter'].apply(convert_quarter)
 df2=data.copy()
@@ -166,13 +178,7 @@ df_phone_models['Quarter'] = df_phone_models['parsed_date'].dt.to_period('Q').so
 df_model_counts = df_phone_models.groupby(['Brand', 'Quarter']).size().reset_index(name='Models_Released')
 df_model_counts['Brand'] = df_model_counts['Brand'].str.title()
 
-def convert_quarter2(date_str):
-    parts = str(date_str).split('Q')
-    if len(parts) == 2:
-        quarter, year = parts[1], parts[0]
-        return f"Q{quarter} \\'{year}"
-    else:
-        return None 
+
 df_model_counts['Quarter'] = df_model_counts['Quarter'].apply(convert_quarter2)
 
 standardized_data = []

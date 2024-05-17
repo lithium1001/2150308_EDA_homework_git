@@ -23,6 +23,71 @@ def load_data3(file_path):
     df = pd.read_excel(file_path, sheet_name='Data', skiprows=4)
     return df
 
+def extract_weight(weight_str):
+    weight_values = []
+    if isinstance(weight_str, str):
+        for w in weight_str.split('/'):
+            for sub_w in w.split('or'):
+                sub_w = re.sub(r'\([^()]*\)', '', sub_w)  # 删除括号及其中的内容
+                sub_w = sub_w.strip().split()[0]  # 只取重量值中的第一个数字部分
+                sub_w = sub_w.replace('g', '')  
+                if sub_w.replace('.', '', 1).isdigit():  # 允许有一个小数点
+                    weight_values.append(float(sub_w))  
+    return sum(weight_values) / len(weight_values) if weight_values else None
+
+def extract_dimensions(dimensions_str):
+    if isinstance(dimensions_str, str):
+        if 'fold' in dimensions_str.lower():
+            return pd.Series([None, None, None])
+        else:
+            dimensions_parts = dimensions_str.split('(')[0].split('x')
+            dimensions_mm = [part.strip().split()[0] for part in dimensions_parts[:3]]  
+            return pd.Series(dimensions_mm)
+    else:
+        return pd.Series([None, None, None])
+
+def parse_date(date_str):
+    if not isinstance(date_str, str):
+        return None
+    try:
+        date = pd.to_datetime(date_str)
+        return date.strftime("%Y-%m-%d")
+    except (ValueError, TypeError):
+        pass
+    # 定义日期格式的正则表达式
+    patterns = [
+        r'Released\s(\d{4}),\s(\w+)\s(\d{1,2})',        # 2: Released 2010, March (第二个日期)
+        r'(\d{4}),\s(Q\d)',                             # 4: 2017, Q1
+        r'(\d{4}),\s(\w+)',                             # 5: 2006, June
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, date_str)
+        if match:
+            if len(match.groups()) == 3:
+                year, month, day = match.groups()
+                date = datetime.strptime(f"{day} {month} {year}", "%d %B %Y")
+                return date.strftime("%Y-%m-%d")
+            elif len(match.groups()) == 2:
+                year, month_or_quarter = match.groups()
+                if 'Q' in month_or_quarter:
+                    month_day = {
+                        'Q1': '01-01',
+                        'Q2': '04-01',
+                        'Q3': '07-01',
+                        'Q4': '10-01'
+                    }
+                    date = f"{year}-{month_day[month_or_quarter]}"
+                else:
+                    date = datetime.strptime(f"01 {month_or_quarter} {year}", "%d %B %Y")
+                    date = date.strftime("%Y-%m-%d")
+                return date
+
+    if "Not" in date_str:
+        return None
+
+    return None
+
 file_path = 'data/vendor-ww-monthly-201003-202405.csv'
 
 data = load_data(file_path)                                                                       # 月度份额
@@ -85,80 +150,18 @@ st.pyplot(fig3)
 st.divider()
 st.markdown('## 数据变换')
 st.markdown('### 类型转换')
-def extract_weight(weight_str):
-    weight_values = []
-    if isinstance(weight_str, str):
-        for w in weight_str.split('/'):
-            for sub_w in w.split('or'):
-                sub_w = re.sub(r'\([^()]*\)', '', sub_w)  # 删除括号及其中的内容
-                sub_w = sub_w.strip().split()[0]  # 只取重量值中的第一个数字部分
-                sub_w = sub_w.replace('g', '')  
-                if sub_w.replace('.', '', 1).isdigit():  # 允许有一个小数点
-                    weight_values.append(float(sub_w))  
-    return sum(weight_values) / len(weight_values) if weight_values else None
 
 df_phone_models['Body_Weight_gram'] = df_phone_models['Body_Weight'].apply(extract_weight)
 df_show=df_phone_models[['Body_Weight_gram','Body_Weight']]
 st.write(df_show.head())
 
 st.markdown('### 维度拆分')
-def extract_dimensions(dimensions_str):
-    if isinstance(dimensions_str, str):
-        if 'fold' in dimensions_str.lower():
-            return pd.Series([None, None, None])
-        else:
-            dimensions_parts = dimensions_str.split('(')[0].split('x')
-            dimensions_mm = [part.strip().split()[0] for part in dimensions_parts[:3]]  
-            return pd.Series(dimensions_mm)
-    else:
-        return pd.Series([None, None, None])
+
 df_phone_models[['Length', 'Width', 'Height']] = df_phone_models['Body_Dimensions'].apply(extract_dimensions)
 df_show=df_phone_models[['Body_Dimensions','Length', 'Width', 'Height']]
 st.write(df_show.head())
 
 st.markdown('### 日期正则化')
-def parse_date(date_str):
-    if not isinstance(date_str, str):
-        return None
-    try:
-        date = pd.to_datetime(date_str)
-        return date.strftime("%Y-%m-%d")
-    except (ValueError, TypeError):
-        pass
-    # 定义日期格式的正则表达式
-    patterns = [
-        r'Released\s(\d{4}),\s(\w+)\s(\d{1,2})',        # 2: Released 2010, March (第二个日期)
-        r'(\d{4}),\s(Q\d)',                             # 4: 2017, Q1
-        r'(\d{4}),\s(\w+)',                             # 5: 2006, June
-    ]
-
-    for pattern in patterns:
-        match = re.search(pattern, date_str)
-        if match:
-            if len(match.groups()) == 3:
-                year, month, day = match.groups()
-                date = datetime.strptime(f"{day} {month} {year}", "%d %B %Y")
-                return date.strftime("%Y-%m-%d")
-            elif len(match.groups()) == 2:
-                year, month_or_quarter = match.groups()
-                if 'Q' in month_or_quarter:
-                    month_day = {
-                        'Q1': '01-01',
-                        'Q2': '04-01',
-                        'Q3': '07-01',
-                        'Q4': '10-01'
-                    }
-                    date = f"{year}-{month_day[month_or_quarter]}"
-                else:
-                    date = datetime.strptime(f"01 {month_or_quarter} {year}", "%d %B %Y")
-                    date = date.strftime("%Y-%m-%d")
-                return date
-
-    if "Not" in date_str:
-        return None
-
-    return None
-
 
 df_phone_models['parsed_date'] = df_phone_models['Launch_Announced'].apply(parse_date)
 df_show=df_phone_models[['Launch_Announced','parsed_date']]
@@ -182,7 +185,7 @@ with col2:
     sns.boxenplot(y=df_phone_models['Body_Weight_gram'], ax=ax4)
    
     st.pyplot(fig4, bbox_inches='tight')  # 使用bbox_inches='tight'来修剪图表的多余边框
-st.markdown('#### 查看重量分布时发现有重量大于800g及小于50g的样本，查询后发现是型号中不含Tab、Tablet、Watch等的智能平板、智能手表等，进行手动删除。')
+st.markdown('查看重量分布时发现有重量大于800g及小于50g的样本，查询后发现是型号中不含Tab、Tablet、Watch等的智能平板、智能手表等，进行手动删除。')
 st.divider()
 st.markdown('## 样本质量')
 # 选择数值列
