@@ -24,13 +24,11 @@ def load_data3(file_path):
     df = pd.read_excel(file_path, sheet_name='Data', skiprows=4)
     return df
 
-# 读取Excel文件
 excel_file = "data/phone_parameters_refined.xlsx"
 df = load_data2(excel_file)
 
 df['parsed_date'] = pd.to_datetime(df['parsed_date'], errors='coerce')
 
-# 提取年份
 df['Year'] = df['parsed_date'].dt.year
 
 brand_colors = {
@@ -74,15 +72,13 @@ color_map = {
     'sapphire blue': '#48AAAD',
     'mint': '#98EDC3'
 }
-#################################各时代代表机型图片（机型销售数据找不到，看研报吧）############################
 
-st.markdown("## 1. 时代代表机型图片")
+st.markdown("## 代表机型")
 img=Image.open("data/phone_development.jpg")
-fig8=px.imshow(img)
-fig8.update_layout(width=1000, height=800)
-st.plotly_chart(fig8)
-##################################功能特色怎么搞？（指纹识别、人脸识别、5G）###########################
-
+fig11=px.imshow(img)
+fig11.update_layout(width=1000, height=800)
+st.plotly_chart(fig11)
+st.divider()
 st.markdown("## 2. 机型与屏幕保护特色")
 df=df.sort_values(by='Year')
 
@@ -103,9 +99,7 @@ def generate_wordcloud(text):
 years = df['Year'].unique()
 selected_year = st.selectbox('Select Year', years)
 
-# 生成并展示词云图
 if selected_year:
-    # 将所有非字符串值转换为字符串
     text_data = ' '.join(df[df['Year'] == selected_year][['Body_Build']].fillna('').astype(str).apply(', '.join, axis=1))
     wordcloud = generate_wordcloud(text_data)
     
@@ -132,11 +126,9 @@ if selected_year:
     plt.title(f'Word Cloud for Year {selected_year}')
     st.pyplot(plt)
 
+st.divider()
 
 
-
-###################
-######################################CPU和GPU型号趋势######################################
 st.markdown("## 3. CPU和GPU型号趋势")
 def extract_features(text):
     try:
@@ -165,7 +157,7 @@ df['Max Frequency (GHz)'] = features.apply(lambda x: x[1] if x else None)
 df = df[df['Max Frequency (GHz)'] <= 5]
 yearly_brand_max_freq = df.groupby(['Year', 'Brand'])['Max Frequency (GHz)'].max().unstack()
 
-# 绘制时钟速度趋势图
+# 时钟速度趋势图
 fig8 = go.Figure()
 for brand in yearly_brand_max_freq.columns:
     fig8.add_trace(go.Scatter(x=yearly_brand_max_freq.index, y=yearly_brand_max_freq[brand], mode='lines+markers', name=brand))
@@ -190,7 +182,8 @@ fig9.update_layout(
     yaxis_title='Percentage (%)'
 )
 st.plotly_chart(fig9)   
-########################网络技术趋势######################
+
+st.divider()
 st.markdown("## 4. 网络技术趋势")
 
 # 网络技术列
@@ -252,8 +245,8 @@ fig4.update_layout(
 st.plotly_chart(fig3)
 st.plotly_chart(fig4)
 st.markdown("总体趋势显示，从2G和3G技术逐渐过渡到4G LTE技术，并且最近几年开始向5G技术发展。GSM和HSPA等较旧的技术逐渐被淘汰，而LTE和5G等新技术的采用率迅速增加。")
-#######################重量趋势图##################
-st.markdown("## 5. 重量趋势图")
+st.divider()
+st.markdown("## 各品牌重量趋势图")
 # 按年份分组并计算不同型号的数量
 weight_trend = df.groupby(['Year', 'Brand'])['Body_Weight_gram'].mean().reset_index()
 
@@ -297,8 +290,9 @@ for trace in fig.data:
 
 # 在 Streamlit 中显示图表
 st.plotly_chart(fig)
+st.divider()
 
-#################333尺寸与重量联合图（近年的可能趋势较为微妙，图放大）##################33
+
 st.markdown("## 6. 屏幕尺寸与重量联合图")
 # 不同品牌不同颜色
 df_sorted = df.sort_values(by='Year')  
@@ -312,7 +306,9 @@ fig2 = px.scatter(df_sorted, y='Body_Weight_gram', x='Size_Inches', color='Brand
 fig2.update_layout(width=1000, height=800,xaxis=dict(range=[0, 8]),yaxis=dict(range=[0, 300]))
 fig2.update_traces(marker_size=10)
 st.plotly_chart(fig2)
-######################33摄像头特色（分年度词云图）####################33
+
+
+st.divider()
 st.markdown("## 7. 摄像头像素")
 # 提取摄像头特性的函数
 def extract_camera_features(text):
@@ -430,7 +426,9 @@ df['Video Resolution'] = df['Video Resolution'].map(resolution_mapping)
 st.write(camera_data)
 # 绘制图表
 plot_ternary_charts(camera_data)
-###############################电池趋势图###########################
+
+
+st.divider()
 st.markdown("## 8. 电池趋势图")
 battery_data = df['Battery_Type'].dropna()
 split_data = battery_data.str.split(',', n=1, expand=True)[0].str.extract(r'(\D+)\s(\d+)\s(\D+)')
@@ -467,8 +465,10 @@ fig7.update_layout(title='Trend of Battery Capacity by Year and Brand',
                    xaxis_title='Year', yaxis_title='Average Capacity (mAh)',
                    legend_title='Brand')
 st.plotly_chart(fig7)
-###########################3蓝牙、NFC出现、当年支持机型比例########333
-st.markdown("## 9. 蓝牙、NFC出现、当年支持机型比例")
+
+
+st.divider()
+st.markdown("## 9、蓝牙发展趋势")
 relevant_columns = ['parsed_date', 'Sound_35mmjack', 'Comms_WLAN', 'Comms_Bluetooth', 'Comms_Positioning', 'Comms_NFC']
 df_relevant = df[relevant_columns]
 
@@ -575,6 +575,8 @@ fig5.update_layout(
     xaxis_title='Year',
     yaxis_title='Percentage (%)',
     legend_title='Colors',
+    width=1000,
+    height=600
     
 )
 

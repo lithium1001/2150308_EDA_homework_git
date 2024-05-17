@@ -92,9 +92,9 @@ def extract_weight(weight_str):
             for sub_w in w.split('or'):
                 sub_w = re.sub(r'\([^()]*\)', '', sub_w)  # 删除括号及其中的内容
                 sub_w = sub_w.strip().split()[0]  # 只取重量值中的第一个数字部分
-                sub_w = sub_w.replace('g', '')  # 去除"g"字符
-                if sub_w.replace('.', '', 1).isdigit():  # 判断是否为数字，允许有一个小数点
-                    weight_values.append(float(sub_w))  # 提取所有重量值
+                sub_w = sub_w.replace('g', '')  
+                if sub_w.replace('.', '', 1).isdigit():  # 允许有一个小数点
+                    weight_values.append(float(sub_w))  
     return sum(weight_values) / len(weight_values) if weight_values else None
 
 df_phone_models['Body_Weight_gram'] = df_phone_models['Body_Weight'].apply(extract_weight)
@@ -108,7 +108,7 @@ def extract_dimensions(dimensions_str):
             return pd.Series([None, None, None])
         else:
             dimensions_parts = dimensions_str.split('(')[0].split('x')
-            dimensions_mm = [part.strip().split()[0] for part in dimensions_parts[:3]]  # 取前3个尺寸的数字部分
+            dimensions_mm = [part.strip().split()[0] for part in dimensions_parts[:3]]  
             return pd.Series(dimensions_mm)
     else:
         return pd.Series([None, None, None])
