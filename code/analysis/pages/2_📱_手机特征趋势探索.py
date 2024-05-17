@@ -258,6 +258,7 @@ fig8.update_layout(
     width=1100, height=700
 )
 st.plotly_chart(fig8)
+st.markdown('大部分品牌在2013年至2014年间经历了显著的时钟速度增长，并在此后保持稳步上升或波动上升的趋势。特别是从2018年起，各品牌之间的最高时钟速度逐渐趋于一致，达到或接近3 GHz，反映了手机处理器性能逐渐趋同的现象。同时，个别品牌如Apple和Samsung在某些年份表现出更高的时钟速度。')
 yearly_core_type = df.groupby(['Year', 'Core Type']).size().unstack().fillna(0)
 yearly_percentages = yearly_core_type.div(yearly_core_type.sum(axis=1), axis=0) * 100
 fig9 = go.Figure()
@@ -272,30 +273,13 @@ fig9.update_layout(
     width=1100, height=700
 )
 st.plotly_chart(fig9)   
-
+st.markdown('手机处理器的发展趋势从单核、双核逐渐向多核（四核、八核）过渡，八核处理器在近几年成为了市场主流，而在近年还出现了九核处理器（Nonacore）。')
 st.divider()
 st.markdown("## 网络技术趋势")
 st.markdown("### 移动网络技术")
 # 网络技术列
 network_columns = ['LTE', 'EVDO', 'HSPA', 'NO CELLULAR CONNECTIVITY', '5G', 'GSM', 'CDMA2000', 'CDMA', 'UMTS']
 
-st.markdown('''NO CELLULAR CONNECTIVITY：表示设备不支持蜂窝网络连接
-            
-GSM (Global System for Mobile Communications)：第二代移动通信技术，广泛用于全球的移动通信标准
-
-UMTS (Universal Mobile Telecommunications System)：一种3G移动通信标准，基于GSM技术
-
-CDMA2000：3G移动通信标准，主要在北美和部分亚洲国家使用
-
-EVDO (Evolution-Data Optimized)：一种用于CDMA网络的3G标准，主要用于高速数据传输
-
-HSPA (High Speed Packet Access)：一种增强的3G技术，提供更快的数据传输速度
-
-LTE (Long Term Evolution)：4G无线通信标准，提供高速数据传输
-
-CDMA (Code Division Multiple Access)：一种无线通信技术，允许多个用户共享相同的频率
-
-5G：第五代移动通信技术，提供更快的数据传输速度和更低的延迟''')
 
 # 按年份计算每种技术的支持机型数量
 yearly_data = df.groupby('Year')[network_columns].sum()
@@ -388,6 +372,7 @@ def plot_stacked_bar_chart(trends, title):
 
 st.markdown("### WLAN技术")
 plot_stacked_bar_chart(technology_trends_wlan_filtered, ' ')
+st.markdown("WLAN技术的发展趋势表现出从较早期的WiFi 802.11 a/b/g/n逐渐向更高效、更快速的WiFi 802.11 a/b/g/n/ac和WiFi 802.11 a/b/g/n/ac/6过渡。同时，Dual Band和Hotspot功能在整个时间段内保持较高的普及率，反映了用户对多频段支持和便捷联网需求的重视。")
 
 st.divider()
 st.markdown("## 电池发展趋势")
@@ -413,7 +398,7 @@ fig6 = px.bar(battery_type_normalized,
               barmode='stack')
 fig6.update_layout(xaxis_title='Year', yaxis_title='Proportion',width=1100, height=700)
 st.plotly_chart(fig6)
-
+st.markdown("可拆卸电池逐渐被不可拆卸电池取代。锂离子电池（LiIon）和锂聚合物电池（LiPo）是主要的电池类型，特别是锂聚合物电池的比例在近年来明显增加。新的电池技术如硅碳电池（Siliconcarbon）在近几年有所出现，但占比仍较小。")
 # 按年度和品牌计算电池容量的平均值
 battery_capacity_trend = battery_info.groupby(['Year', 'Brand'])['Capacity_mAh'].mean().unstack()
 
@@ -428,7 +413,7 @@ fig7.update_layout(
                    width=1100, height=700,
                    legend_title='Brand')
 st.plotly_chart(fig7)
-
+st.markdown("各品牌手机的电池容量（mAh）总体呈上升趋势，反映了市场对更大电池容量的需求不断增加。特别是在2016年之后，电池容量的增长趋势更加明显。大多数品牌在2020年之后的电池容量已经达到了4000 mAh以上，一些品牌甚至超过了5000 mAh，与高能量密度的碳硅电池的出现相呼应。")
 
 st.divider()
 st.markdown("## 蓝牙技术发展趋势")
@@ -437,7 +422,7 @@ st.markdown("## 蓝牙技术发展趋势")
 # 绘制图表
 plot_stacked_bar_chart(technology_trends_bluetooth_filtered, ' ')
 # plot_stacked_bar_chart(technology_trends_positioning_filtered, 'Positioning Technology Trends')
-
+st.markdown('Bluetooth 5.0在2020年后占据了较大的比例。Bluetooth LE（低功耗）技术在2014年后开始普及，逐渐成为主流，满足了低功耗连接的需求。同时，EDR（增强型数据速率）和A2DP（高级音频分配配置文件）在整个时间段内保持稳定使用，aptX和aptX HD编解码技术的普及率在2016年后逐渐增加。')
 st.divider()
 def convert_resolution_to_numeric(resolution):
     if resolution == '4K':
@@ -582,6 +567,7 @@ for trace in fig.data:
 
 # 在 Streamlit 中显示图表
 st.plotly_chart(fig)
+st.markdown('2012年以来，各品牌手机的平均重量总体呈上升趋势。从最初的140克逐步增加到接近180克，部分品牌甚至超过了200克。苹果、三星、小米和华为等品牌的手机平均重量显著增加，而HTC和诺基亚的重量变化则较为平缓。')
 st.divider()
 
 
@@ -597,5 +583,6 @@ fig2 = px.scatter(df_sorted, y='Body_Weight_gram', x='Size_Inches', color='Brand
 fig2.update_layout(width=1100, height=700,xaxis=dict(range=[0, 8]),yaxis=dict(range=[0, 300]))
 fig2.update_traces(marker_size=10)
 st.plotly_chart(fig2)
+st.markdown('更大、更重、更高性能的手机正在成为市场主流。')
 
 

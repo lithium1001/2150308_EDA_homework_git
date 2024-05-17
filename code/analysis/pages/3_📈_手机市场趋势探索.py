@@ -131,6 +131,7 @@ for name, sale_list in sale_dict.items():
 
 
 st_pyecharts(c, height=700)
+st.markdown("Samsung在大部分时间内保持领先，出货量持续增长，并在多个时间点达到峰值。Apple的出货量也稳步上升，但增速相对较缓。近年来，Xiaomi、OPPO和vivo等品牌的出货量显著增加。")
 st.divider()
 st.markdown("## 知名供应商市场份额")
 data=data.sort_values(by='Date',ascending=True)
